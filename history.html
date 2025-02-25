@@ -520,10 +520,50 @@
     </footer>
 
     <script>
-        // 简单的时代选择功能
+        // 历史时代选择功能
         document.addEventListener('DOMContentLoaded', function() {
             const eraButtons = document.querySelectorAll('.era-button');
+            const historySections = document.querySelectorAll('.history-section');
+            const placeholder = document.querySelector('.placeholder');
             
+            // 初始化内容显示
+            function initializeContent() {
+                const activeButton = document.querySelector('.era-button.active');
+                if (activeButton) {
+                    showEraContent(activeButton.textContent);
+                }
+            }
+            
+            // 显示选定时代的内容
+            function showEraContent(eraName) {
+                // 隐藏所有内容
+                historySections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                placeholder.style.display = 'none';
+                
+                // 显示选定时代的内容
+                historySections.forEach(section => {
+                    if (section.querySelector('h2') && 
+                        section.querySelector('h2').textContent.includes(eraName)) {
+                        section.style.display = 'block';
+                    }
+                });
+                
+                // 如果没有找到对应内容，显示占位符
+                let foundContent = false;
+                historySections.forEach(section => {
+                    if (section.style.display === 'block') {
+                        foundContent = true;
+                    }
+                });
+                
+                if (!foundContent) {
+                    placeholder.style.display = 'block';
+                }
+            }
+            
+            // 为每个按钮添加点击事件
             eraButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     // 移除所有按钮的active类
@@ -531,10 +571,13 @@
                     // 为当前点击的按钮添加active类
                     this.classList.add('active');
                     
-                    // 这里可以添加显示/隐藏相应时代内容的逻辑
-                    // 目前仅做演示，实际功能需要进一步开发
+                    // 显示对应时代的内容
+                    showEraContent(this.textContent);
                 });
             });
+            
+            // 初始化页面内容
+            initializeContent();
         });
     </script>
 </body>

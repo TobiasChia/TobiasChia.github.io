@@ -499,10 +499,60 @@
     </footer>
 
     <script>
-        // 简单的标签切换功能
+        // 设定标签切换功能
         document.addEventListener('DOMContentLoaded', function() {
             const tabs = document.querySelectorAll('.tab');
+            const settingsSections = document.querySelectorAll('.settings-section');
+            const placeholder = document.querySelector('.placeholder');
             
+            // 初始化内容显示
+            function initializeContent() {
+                const activeTab = document.querySelector('.tab.active');
+                if (activeTab) {
+                    showTabContent(activeTab.textContent);
+                }
+            }
+            
+            // 显示选定标签的内容
+            function showTabContent(tabName) {
+                // 隐藏所有内容
+                settingsSections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                placeholder.style.display = 'none';
+                
+                // 根据标签名显示对应内容
+                if (tabName === '魔法系统') {
+                    // 显示魔法系统部分
+                    settingsSections.forEach(section => {
+                        if (section.querySelector('h2') && 
+                            section.querySelector('h2').textContent.includes('魔法系统')) {
+                            section.style.display = 'block';
+                        }
+                    });
+                } else if (tabName === '地理环境') {
+                    // 显示地理环境部分
+                    settingsSections.forEach(section => {
+                        if (section.querySelector('h2') && 
+                            section.querySelector('h2').textContent.includes('地理环境')) {
+                            section.style.display = 'block';
+                        }
+                    });
+                } else if (tabName === '种族特点') {
+                    // 显示种族特点部分
+                    settingsSections.forEach(section => {
+                        if (section.querySelector('h2') && 
+                            section.querySelector('h2').textContent.includes('种族特点')) {
+                            section.style.display = 'block';
+                        }
+                    });
+                } else {
+                    // 其他标签（社会结构、科技水平、宗教信仰）显示占位符
+                    placeholder.style.display = 'block';
+                }
+            }
+            
+            // 为每个标签添加点击事件
             tabs.forEach(tab => {
                 tab.addEventListener('click', function() {
                     // 移除所有标签的active类
@@ -510,10 +560,13 @@
                     // 为当前点击的标签添加active类
                     this.classList.add('active');
                     
-                    // 这里可以添加显示/隐藏相应内容的逻辑
-                    // 目前仅做演示，实际功能需要进一步开发
+                    // 显示对应标签的内容
+                    showTabContent(this.textContent);
                 });
             });
+            
+            // 初始化页面内容
+            initializeContent();
         });
     </script>
 </body>

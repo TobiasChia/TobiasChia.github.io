@@ -348,10 +348,65 @@
     </footer>
 
     <script>
-        // 简单的时代选择功能
+        // 时代选择功能
         document.addEventListener('DOMContentLoaded', function() {
             const eraButtons = document.querySelectorAll('.era-button');
             
+            // 创建时代内容的映射
+            const eraContents = {
+                '第一纪元': '第一纪元 - 古代王国与魔法的黄金时代',
+                '第二纪元': '第二纪元 - 重建与冲突的时代',
+                '第三纪元': '第三纪元 - 魔法与文明的繁荣时期',
+                '当前时代': '当前时代'
+            };
+            
+            // 初始化时隐藏非活动时代的内容
+            function initializeContent() {
+                const activeButton = document.querySelector('.era-button.active');
+                if (activeButton) {
+                    showEraContent(activeButton.textContent);
+                }
+            }
+            
+            // 显示选定时代的内容，隐藏其他时代的内容
+            function showEraContent(eraName) {
+                const sections = document.querySelectorAll('.history-section, .timeline');
+                const eraHeading = document.querySelector('.era-heading');
+                
+                // 更新时代标题
+                if (eraHeading && eraName === '第三纪元') {
+                    eraHeading.textContent = '第三纪元 - 魔法与文明的繁荣时期';
+                }
+                
+                // 隐藏所有内容
+                sections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                // 显示选定时代的内容
+                sections.forEach(section => {
+                    if (section.querySelector('h2') && 
+                        section.querySelector('h2').textContent.includes(eraName)) {
+                        section.style.display = 'block';
+                    } else if (eraName === '第三纪元' && section.classList.contains('timeline')) {
+                        section.style.display = 'block';
+                    }
+                });
+                
+                // 如果是当前时代，显示第三纪元的内容
+                if (eraName === '当前时代') {
+                    sections.forEach(section => {
+                        if (section.querySelector('h2') && 
+                            section.querySelector('h2').textContent.includes('第三纪元')) {
+                            section.style.display = 'block';
+                        } else if (section.classList.contains('timeline')) {
+                            section.style.display = 'block';
+                        }
+                    });
+                }
+            }
+            
+            // 为每个按钮添加点击事件
             eraButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     // 移除所有按钮的active类
@@ -359,10 +414,13 @@
                     // 为当前点击的按钮添加active类
                     this.classList.add('active');
                     
-                    // 这里可以添加显示/隐藏相应时代内容的逻辑
-                    // 目前仅做演示，实际功能需要进一步开发
+                    // 显示对应时代的内容
+                    showEraContent(this.textContent);
                 });
             });
+            
+            // 初始化页面内容
+            initializeContent();
         });
     </script>
 </body>
