@@ -4,109 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>人物 - 异世界编年史</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        header {
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            text-align: center;
-            padding: 2rem 0;
-        }
-        h1 {
-            margin: 0;
-            font-size: 2.5rem;
-        }
-        .subtitle {
-            font-style: italic;
-            margin-top: 0.5rem;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        .navigation {
-            background-color: #34495e;
-            padding: 1rem 0;
-        }
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-        }
-        .nav-container a {
-            color: #ecf0f1;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            margin: 0 0.5rem;
-            border-radius: 3px;
-            transition: background-color 0.3s ease;
-        }
-        .nav-container a:hover {
-            background-color: #2c3e50;
-        }
-        .nav-container a.active {
-            background-color: #3498db;
-        }
-        .intro {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background-color: #ecf0f1;
-            border-radius: 5px;
-        }
-        .character-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        .character-card {
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .character-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .character-card h2 {
-            color: #2c3e50;
-            margin-top: 0;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 0.5rem;
-        }
-        .character-info {
-            margin-bottom: 1rem;
-        }
-        .character-info span {
-            font-weight: bold;
-            color: #7f8c8d;
-        }
-        .placeholder {
-            text-align: center;
-            padding: 3rem;
-            background-color: #ecf0f1;
-            border-radius: 5px;
-            margin: 2rem 0;
-        }
-        footer {
-            text-align: center;
-            padding: 1rem;
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            margin-top: 2rem;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
     <header>
@@ -128,75 +26,77 @@
 
     <div class="container">
         <div class="intro">
-            <p>这里记录了异世界中的重要人物，包括他们的背景、能力、性格特点和在世界中的影响。</p>
+            <p>这里记录了异世界中的重要人物，包括他们的背景、能力、性格特点和在世界中的影响。</p>
         </div>
 
         <div class="character-list">
+            
             <div class="character-card">
-                <h2>艾莉娜·风行者</h2>
+                <h2>艾莉娜·风行者</h2>
                 <div class="character-info">
                     <p><span>种族：</span> 精灵</p>
                     <p><span>职业：</span> 游侠/魔法师</p>
                     <p><span>年龄：</span> 127岁（精灵年龄）</p>
                     <p><span>势力：</span> 银月森林守护者</p>
                 </div>
-                <p>艾莉娜是银月森林的守护者之一，精通自然魔法和弓箭技艺。她性格坚毅，对保护森林和自然生态充满热忱。在大魔法战争中，她带领精灵族抵抗了黑暗魔法的侵蚀，被誉为"绿叶之心"。</p>
+                <p>艾莉娜是银月森林的守护者之一，精通自然魔法和弓箭技艺。她性格坚毅，对保护森林和自然生态充满热忱。在大魔法战争中，她带领精灵族抵抗了黑暗魔法的侵蚀，被誉为"绿叶之心"。</p>
             </div>
-
+            
             <div class="character-card">
-                <h2>托尔·雷霆</h2>
+                <h2>托尔·雷霆</h2>
                 <div class="character-info">
                     <p><span>种族：</span> 矮人</p>
                     <p><span>职业：</span> 战士/铁匠</p>
                     <p><span>年龄：</span> 82岁</p>
                     <p><span>势力：</span> 铁山氏族</p>
                 </div>
-                <p>托尔是铁山氏族最杰出的铁匠之一，他锻造的武器能够承载特殊的魔法力量。性格豪爽但固执，对传统和荣誉极为看重。在龙族入侵时，他铸造了著名的"龙息剑"，成为抵抗龙族的关键武器。</p>
+                <p>托尔是铁山氏族最杰出的铁匠之一，他锻造的武器能够承载特殊的魔法力量。性格豪爽但固执，对传统和荣誉极为看重。在龙族入侵时，他铸造了著名的"龙息剑"，成为抵抗龙族的关键武器。</p>
             </div>
-
+            
             <div class="character-card">
-                <h2>莫里斯·暗影</h2>
+                <h2>莫里斯·暗影</h2>
                 <div class="character-info">
                     <p><span>种族：</span> 人类</p>
                     <p><span>职业：</span> 刺客/间谍</p>
                     <p><span>年龄：</span> 35岁</p>
                     <p><span>势力：</span> 暗夜兄弟会</p>
                 </div>
-                <p>莫里斯曾是王室护卫，后因宫廷阴谋而被迫流亡，加入了神秘的暗夜兄弟会。他精通各种暗器和毒药，行踪诡秘。尽管表面冷酷，但他内心仍然保持着对正义的坚持，暗中帮助弱小者对抗权贵的压迫。</p>
+                <p>莫里斯曾是王室护卫，后因宫廷阴谋而被迫流亡，加入了神秘的暗夜兄弟会。他精通各种暗器和毒药，行踪诡秘。尽管表面冷酷，但他内心仍然保持着对正义的坚持，暗中帮助弱小者对抗权贵的压迫。</p>
             </div>
-
+            
             <div class="character-card">
-                <h2>莉莎·火焰</h2>
+                <h2>莉莎·火焰</h2>
                 <div class="character-info">
                     <p><span>种族：</span> 人类</p>
                     <p><span>职业：</span> 元素法师</p>
                     <p><span>年龄：</span> 28岁</p>
                     <p><span>势力：</span> 奥术学院</p>
                 </div>
-                <p>莉莎是奥术学院最年轻的高阶法师，天赋异禀，尤其擅长火元素魔法。她性格热情奔放，但也因为强大的力量而常常感到孤独。在魔法灾变期间，她发现了古老的元素平衡法则，为世界带来了新的魔法理论。</p>
+                <p>莉莎是奥术学院最年轻的高阶法师，天赋异禀，尤其擅长火元素魔法。她性格热情奔放，但也因为强大的力量而常常感到孤独。在魔法灾变期间，她发现了古老的元素平衡法则，为世界带来了新的魔法理论。</p>
             </div>
-
+            
             <div class="character-card">
-                <h2>卡尔·石心</h2>
+                <h2>卡尔·石心</h2>
                 <div class="character-info">
                     <p><span>种族：</span> 兽人</p>
                     <p><span>职业：</span> 萨满/部落首领</p>
                     <p><span>年龄：</span> 45岁</p>
                     <p><span>势力：</span> 红岩部落</p>
                 </div>
-                <p>卡尔是红岩部落的首领，同时也是一位强大的萨满祭司。他能够与自然和祖先灵魂沟通，引导部落走向繁荣。尽管兽人常被其他种族误解为野蛮人，但在卡尔的领导下，红岩部落发展了独特的文化和医疗技术，成为草原上最强大的部落之一。</p>
+                <p>卡尔是红岩部落的首领，同时也是一位强大的萨满祭司。他能够与自然和祖先灵魂沟通，引导部落走向繁荣。尽管兽人常被其他种族误解为野蛮人，但在卡尔的领导下，红岩部落发展了独特的文化和医疗技术，成为草原上最强大的部落之一。</p>
             </div>
-
+            
             <div class="character-card">
-                <h2>艾琳·星辰</h2>
+                <h2>艾琳·星辰</h2>
                 <div class="character-info">
                     <p><span>种族：</span> 半精灵</p>
                     <p><span>职业：</span> 占星师/预言者</p>
                     <p><span>年龄：</span> 60岁</p>
                     <p><span>势力：</span> 独立</p>
                 </div>
-                <p>艾琳是一位神秘的占星师，能够通过星象预测未来的事件。她居住在边境地带的高塔中，很少与外界接触。许多重要人物都会秘密前往寻求她的建议。她的预言往往模糊但准确，据说她预见了即将到来的"世界之变"，但具体内容无人知晓。</p>
+                <p>艾琳是一位神秘的占星师，能够通过星象预测未来的事件。她居住在边境地带的高塔中，很少与外界接触。许多重要人物都会秘密前往寻求她的建议。她的预言往往模糊但准确，据说她预见了即将到来的"世界之变"，但具体内容无人知晓。</p>
             </div>
+            
         </div>
 
         <div class="placeholder">
@@ -208,5 +108,7 @@
     <footer>
         <p>&copy; 2025 异世界编年史 | 冷兵器与魔法的奇幻世界</p>
     </footer>
+
+    <script src="scripts/main.js"></script>
 </body>
 </html>

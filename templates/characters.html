@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人物 - 异世界编年史</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <header>
+        <h1>异世界编年史</h1>
+        <div class="subtitle">人物志</div>
+    </header>
+
+    <div class="navigation">
+        <div class="nav-container">
+            <a href="index.html">首页</a>
+            <a href="characters.html" class="active">人物</a>
+            <a href="events.html">事件</a>
+            <a href="relationships.html">关系</a>
+            <a href="timeline.html">时间轴</a>
+            <a href="settings.html">设定</a>
+            <a href="history.html">历史</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="intro">
+            {{intro}}
+        </div>
+
+        <div class="character-list">
+            {{#characters}}
+            <div class="character-card">
+                <h2>{{name}}</h2>
+                <div class="character-info">
+                    <p><span>种族：</span> {{race}}</p>
+                    <p><span>职业：</span> {{profession}}</p>
+                    <p><span>年龄：</span> {{age}}</p>
+                    <p><span>势力：</span> {{faction}}</p>
+                </div>
+                <p>{{description}}</p>
+            </div>
+            {{/characters}}
+        </div>
+
+        <div class="placeholder">
+            <h2>更多人物正在整理中...</h2>
+            <p>这个世界中还有许多精彩的角色等待被发掘和记录。</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 异世界编年史 | 冷兵器与魔法的奇幻世界</p>
+    </footer>
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>

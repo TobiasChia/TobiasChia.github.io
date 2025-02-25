@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown查看器 - 异世界编年史</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .md-viewer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .md-selector {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .md-selector select {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        .md-selector button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+        .md-selector button:hover {
+            background-color: #2980b9;
+        }
+        .md-content {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .error {
+            color: #e74c3c;
+            padding: 1rem;
+            background-color: #fadbd8;
+            border-radius: 3px;
+        }
+    </style>
+    <!-- 引入marked库用于解析Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>异世界编年史</h1>
+        <div class="subtitle">Markdown内容查看器</div>
+    </header>
+
+    <div class="navigation">
+        <div class="nav-container">
+            <a href="index.html">首页</a>
+            <a href="characters.html">人物</a>
+            <a href="events.html">事件</a>
+            <a href="relationships.html">关系</a>
+            <a href="timeline.html">时间轴</a>
+            <a href="settings.html">设定</a>
+            <a href="history.html">历史</a>
+        </div>
+    </div>
+
+    <div class="md-viewer-container">
+        <div class="md-selector">
+            <label for="md-file">选择Markdown文件：</label>
+            <select id="md-file">
+                <option value="content/index.md">首页</option>
+                <option value="content/characters.md">人物</option>
+                <!-- 可以添加更多选项 -->
+            </select>
+            <button id="load-md">加载内容</button>
+        </div>
+
+        <div id="md-content" class="md-content">
+            <p>请选择一个Markdown文件并点击"加载内容"按钮。</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 异世界编年史 | 冷兵器与魔法的奇幻世界</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mdFileSelect = document.getElementById('md-file');
+            const loadButton = document.getElementById('load-md');
+            const contentElement = document.getElementById('md-content');
+            
+            loadButton.addEventListener('click', function() {
+                const selectedFile = mdFileSelect.value;
+                loadMarkdownContent(selectedFile);
+            });
+            
+            /**
+             * 加载Markdown内容并转换为HTML
+             * @param {string} path - Markdown文件路径
+             */
+            async function loadMarkdownContent(path) {
+                try {
+                    const response = await fetch(path);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const mdContent = await response.text();
+                    
+                    // 解析Markdown内容
+                    const { metadata, content } = extractFrontMatter(mdContent);
+                    const htmlContent = parseMarkdown(content);
+                    
+                    // 显示元数据
+                    let metadataHtml = '';
+                    if (Object.keys(metadata).length > 0) {
+                        metadataHtml = '<div class="metadata">';
+                        for (const [key, value] of Object.entries(metadata)) {
+                            metadataHtml += `<p><strong>${key}:</strong> ${value}</p>`;
+                        }
+                        metadataHtml += '</div><hr>';
+                    }
+                    
+                    // 将HTML内容插入到页面中
+                    contentElement.innerHTML = metadataHtml + htmlContent;
+                    
+                    // 更新页面标题
+                    if (metadata.title) {
+                        document.title = `${metadata.title} - 异世界编年史`;
+                    }
+                } catch (error) {
+                    console.error('加载Markdown内容失败:', error);
+                    contentElement.innerHTML = `<div class="error">加载内容失败: ${error.message}</div>`;
+                }
+            }
+            
+            /**
+             * 从Markdown的front matter中提取元数据
+             * @param {string} markdown - Markdown文本
+             * @returns {Object} 包含元数据和内容的对象
+             */
+            function extractFrontMatter(markdown) {
+                const frontMatterMatch = markdown.match(/^---\n([\s\S]*?)\n---\n/);
+                if (!frontMatterMatch) {
+                    return { metadata: {}, content: markdown };
+                }
+                
+                const frontMatter = frontMatterMatch[1];
+                const metadata = {};
+                
+                // 解析YAML格式的front matter
+                const lines = frontMatter.split('\n');
+                for (const line of lines) {
+                    const parts = line.split(':');
+                    if (parts.length >= 2) {
+                        const key = parts[0].trim();
+                        const value = parts.slice(1).join(':').trim();
+                        metadata[key] = value;
+                    }
+                }
+                
+                // 移除front matter，只保留内容部分
+                const contentWithoutFrontMatter = markdown.replace(frontMatterMatch[0], '');
+                
+                return { metadata, content: contentWithoutFrontMatter };
+            }
+            
+            /**
+             * 解析Markdown内容为HTML
+             * @param {string} markdown - Markdown文本
+             * @returns {string} HTML内容
+             */
+            function parseMarkdown(markdown) {
+                // 使用marked库解析Markdown
+                return marked.parse(markdown);
+            }
+            
+            // 初始加载默认文件
+            loadMarkdownContent(mdFileSelect.value);
+        });
+    </script>
+</body>
+</html>
