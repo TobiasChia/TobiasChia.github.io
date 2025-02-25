@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间轴 - 异世界编年史</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        header {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .subtitle {
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .navigation {
+            background-color: #34495e;
+            padding: 1rem 0;
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+        .nav-container a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 3px;
+            transition: background-color 0.3s ease;
+        }
+        .nav-container a:hover {
+            background-color: #2c3e50;
+        }
+        .nav-container a.active {
+            background-color: #3498db;
+        }
+        .intro {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+        .era-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .era-button {
+            padding: 0.8rem 1.5rem;
+            background-color: #ecf0f1;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .era-button:first-child {
+            border-radius: 5px 0 0 5px;
+        }
+        .era-button:last-child {
+            border-radius: 0 5px 5px 0;
+        }
+        .era-button.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .era-button:hover:not(.active) {
+            background-color: #d5dbdb;
+        }
+        .timeline {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: #3498db;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background-color: white;
+            border: 4px solid #3498db;
+            border-radius: 50%;
+            top: 15px;
+            z-index: 1;
+        }
+        .left {
+            left: 0;
+        }
+        .right {
+            left: 50%;
+        }
+        .left::after {
+            right: -17px;
+        }
+        .right::after {
+            left: -17px;
+        }
+        .timeline-content {
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .timeline-date {
+            background-color: #3498db;
+            color: white;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .timeline-title {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+        }
+        .timeline-description {
+            margin-bottom: 0;
+        }
+        .timeline-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #3498db;
+            text-decoration: none;
+        }
+        .timeline-link:hover {
+            text-decoration: underline;
+        }
+        .era-heading {
+            text-align: center;
+            color: #2c3e50;
+            margin: 3rem 0 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #3498db;
+        }
+        .placeholder {
+            text-align: center;
+            padding: 3rem;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin: 2rem 0;
+        }
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            margin-top: 2rem;
+        }
+        
+        /* 响应式设计 */
+        @media screen and (max-width: 768px) {
+            .timeline::after {
+                left: 31px;
+            }
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            .timeline-item::after {
+                left: 15px;
+            }
+            .left::after, .right::after {
+                left: 15px;
+            }
+            .right {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>异世界编年史</h1>
+        <div class="subtitle">历史时间轴</div>
+    </header>
+
+    <div class="navigation">
+        <div class="nav-container">
+            <a href="index.html">首页</a>
+            <a href="characters.html">人物</a>
+            <a href="events.html">事件</a>
+            <a href="relationships.html">关系</a>
+            <a href="timeline.html" class="active">时间轴</a>
+            <a href="settings.html">设定</a>
+            <a href="history.html">历史</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="intro">
+            <p>这里按时间顺序记录了异世界的重要历史事件，展示了世界的发展脉络和各个时代的特点。</p>
+        </div>
+
+        <div class="era-selector">
+            <button class="era-button">第一纪元</button>
+            <button class="era-button">第二纪元</button>
+            <button class="era-button active">第三纪元</button>
+            <button class="era-button">当前时代</button>
+        </div>
+
+        <h2 class="era-heading">第三纪元 - 魔法与文明的繁荣时期</h2>
+
+        <div class="timeline">
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <div class="timeline-date">第三纪元 300年</div>
+                    <h3 class="timeline-title">七星议会成立</h3>
+                    <p class="timeline-description">各大种族和魔法组织的代表共同成立了七星议会，旨在协调魔法研究和使用，防止魔法滥用导致的灾难。议会由七位最强大的法师组成，每位代表一个主要魔法学派。</p>
+                    <a href="events.html" class="timeline-link">查看详情</a>
+                </div>
+            </div>
+
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <div class="timeline-date">第三纪元 412年</div>
+                    <h3 class="timeline-title">日冕王国统一</h3>
+                    <p class="timeline-description">在亚历山大一世的领导下，中央大陆的人类城邦联合成为日冕王国，开始了人类历史上最强盛的时期。王国建立了完善的法律体系和贸易网络，成为异世界的政治中心。</p>
+                    <a href="history.html" class="timeline-link">查看详情</a>
+                </div>
+            </div>
+
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <div class="timeline-date">第三纪元 476-485年</div>
+                    <h3 class="timeline-title">大魔法战争</h3>
+                    <p class="timeline-description">暗影教团试图唤醒沉睡的黑暗之神，引发了异世界历史上规模最大的种族冲突。精灵联盟、人类王国和矮人氏族联合对抗暗影教团、被控制的兽人部落和亡灵军团。战争最终以暗影教团的失败告终，但世界也付出了巨大代价。</p>
+                    <a href="events.html" class="timeline-link">查看详情</a>
+                </div>
+            </div>
+
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <div class="timeline-date">第三纪元 490年</div>
+                    <h3 class="timeline-title">奥术学院建立</h3>
+                    <p class="timeline-description">为了规范魔法教育和研究，七星议会在中央大陆建立了奥术学院。学院汇集了来自各个种族的魔法天才，成为魔法知识交流和创新的中心。学院分为元素、预言、变形、附魔等多个学派。</p>
+                    <a href="settings.html" class="timeline-link">查看详情</a>
+                </div>
+            </div>
+
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <div class="timeline-date">第三纪元 512-515年</div>
+                    <h3 class="timeline-title">龙族入侵</h3>
+                    <p class="timeline-description">沉睡千年的古龙族群苏醒，认为矮人挖掘矿脉侵犯了它们的领地，发动了大规模攻击。矮人铁匠托尔·雷霆铸造出能够伤害龙族的"龙息剑"，北方人类部落的战士们手持这些武器，与矮人一起抵抗龙族的入侵。</p>
+                    <a href="events.html" class="timeline-link">查看详情</a>
+                </div>
+            </div>
+
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <div class="timeline-date">第三纪元 550年</div>
+                    <h3 class="timeline-title">卡尔·石心统一兽人部落</h3>
+                    <p class="timeline-description">卡尔·石心通过智慧和力量征服了草原上的多个兽人部落，建立了红岩部落联盟。他打破了兽人只是野蛮战士的刻板印象，发展了兽人独特的医疗技术和萨满文化，使兽人族群逐渐被其他种族接受。</p>
+                    <a href="characters.html" class="timeline-link">查看详情</a>
+                </div>
+            </div>
+
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <div class="timeline-date">第三纪元 589年</div>
+                    <h3 class="timeline-title">魔法灾变</h3>
+                    <p class="timeline-description">奥术学院的法师在尝试开发新型元素魔法时，意外打开了通往元素位面的裂缝。大量未经控制的元素能量涌入现实世界，导致各地出现异常天气、自然灾害和魔法生物异变。年轻法师莉莎·火焰发现了元素平衡的奥秘，成功修复了位面裂缝。</p>
+                    <a href="events.html" class="timeline-link">查看详情</a>
+                </div>
+            </div>
+
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <div class="timeline-date">第三纪元 601年</div>
+                    <h3 class="timeline-title">王国阴谋</h3>
+                    <p class="timeline-description">日冕王国内部发生政治动荡，国王亚历山大的弟弟勾结部分贵族和外国势力，策划了一场精心设计的政变。护卫队长莫里斯·暗影被诬陷为叛徒，但最终揭露了阴谋，洗清了罪名，却选择离开王室，加入了暗夜兄弟会。</p>
+                    <a href="events.html" class="timeline-link">查看详情</a>
+                </div>
+            </div>
+
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <div class="timeline-date">第三纪元 615年</div>
+                    <h3 class="timeline-title">艾琳·星辰的预言</h3>
+                    <p class="timeline-description">占星师艾琳·星辰在观测星象时，发现了不寻常的天象变化，预言了即将到来的"世界之变"。这个模糊但令人不安的预言引起了各大势力的关注，七星议会召开了紧急会议，但未能达成一致的应对方案。</p>
+                    <a href="characters.html" class="timeline-link">查看详情</a>
+                </div>
+            </div>
+
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <div class="timeline-date">第三纪元 620年</div>
+                    <h3 class="timeline-title">当前时间点</h3>
+                    <p class="timeline-description">异世界正处于相对和平但暗流涌动的时期。艾琳·星辰的预言引发了各方的紧张和准备，暗影教团的残余势力开始秘密活动，元素位面的稳定性仍然脆弱，而边境地区的冲突也时有发生。</p>
+                    <a href="settings.html" class="timeline-link">查看详情</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="placeholder">
+            <h2>更多历史事件正在整理中...</h2>
+            <p>异世界的历史长河中还有许多重要事件等待被记录。</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 异世界编年史 | 冷兵器与魔法的奇幻世界</p>
+    </footer>
+
+    <script>
+        // 简单的时代选择功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const eraButtons = document.querySelectorAll('.era-button');
+            
+            eraButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按钮的active类
+                    eraButtons.forEach(b => b.classList.remove('active'));
+                    // 为当前点击的按钮添加active类
+                    this.classList.add('active');
+                    
+                    // 这里可以添加显示/隐藏相应时代内容的逻辑
+                    // 目前仅做演示，实际功能需要进一步开发
+                });
+            });
+        });
+    </script>
+</body>
+</html>

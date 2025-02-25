@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关系 - 异世界编年史</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        header {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .subtitle {
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .navigation {
+            background-color: #34495e;
+            padding: 1rem 0;
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+        .nav-container a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 3px;
+            transition: background-color 0.3s ease;
+        }
+        .nav-container a:hover {
+            background-color: #2c3e50;
+        }
+        .nav-container a.active {
+            background-color: #3498db;
+        }
+        .intro {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+        .relationship-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .tab {
+            padding: 0.8rem 1.5rem;
+            background-color: #ecf0f1;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .tab:first-child {
+            border-radius: 5px 0 0 5px;
+        }
+        .tab:last-child {
+            border-radius: 0 5px 5px 0;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab:hover:not(.active) {
+            background-color: #d5dbdb;
+        }
+        .relationship-section {
+            margin-bottom: 3rem;
+        }
+        .relationship-section h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+        .relationship-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .relationship-card {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .relationship-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .relationship-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .relationship-header h3 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        .relationship-type {
+            background-color: #3498db;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+        .relationship-type.alliance {
+            background-color: #2ecc71;
+        }
+        .relationship-type.rivalry {
+            background-color: #e74c3c;
+        }
+        .relationship-type.complex {
+            background-color: #9b59b6;
+        }
+        .relationship-members {
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        .faction-map {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .faction-map h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+        .faction-description {
+            margin-bottom: 1.5rem;
+        }
+        .faction-relations {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .faction-relation {
+            background-color: #ecf0f1;
+            padding: 0.8rem;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+        .faction-relation.friendly {
+            border-left: 4px solid #2ecc71;
+        }
+        .faction-relation.hostile {
+            border-left: 4px solid #e74c3c;
+        }
+        .faction-relation.neutral {
+            border-left: 4px solid #f1c40f;
+        }
+        .placeholder {
+            text-align: center;
+            padding: 3rem;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin: 2rem 0;
+        }
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>异世界编年史</h1>
+        <div class="subtitle">关系网络</div>
+    </header>
+
+    <div class="navigation">
+        <div class="nav-container">
+            <a href="index.html">首页</a>
+            <a href="characters.html">人物</a>
+            <a href="events.html">事件</a>
+            <a href="relationships.html" class="active">关系</a>
+            <a href="timeline.html">时间轴</a>
+            <a href="settings.html">设定</a>
+            <a href="history.html">历史</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="intro">
+            <p>这里记录了异世界中的各种关系网络，包括人物之间的关系、种族之间的联盟与冲突、势力之间的政治关系等。</p>
+        </div>
+
+        <div class="relationship-tabs">
+            <button class="tab active">人物关系</button>
+            <button class="tab">种族关系</button>
+            <button class="tab">势力地图</button>
+        </div>
+
+        <div class="relationship-section">
+            <h2>重要人物关系</h2>
+            <div class="relationship-grid">
+                <div class="relationship-card">
+                    <div class="relationship-header">
+                        <h3>盟友与导师</h3>
+                        <span class="relationship-type alliance">盟友</span>
+                    </div>
+                    <div class="relationship-members">
+                        艾莉娜·风行者 & 艾琳·星辰
+                    </div>
+                    <p>艾莉娜与艾琳的关系始于大魔法战争期间。艾琳通过星象预测到了黑暗魔法的崛起，主动联系了精灵联盟。尽管艾琳是半精灵，最初遭到了一些精灵的怀疑，但艾莉娜看重她的能力，将她视为重要顾问。</p>
+                    <p>战争结束后，艾琳成为了艾莉娜在魔法研究方面的导师，教导她如何将自然魔法与星象魔法结合。两人经常一起研究古代魔法文献，并合作开发了几种强大的防御法术。</p>
+                </div>
+
+                <div class="relationship-card">
+                    <div class="relationship-header">
+                        <h3>竞争与尊重</h3>
+                        <span class="relationship-type rivalry">竞争</span>
+                    </div>
+                    <div class="relationship-members">
+                        托尔·雷霆 & 卡尔·石心
+                    </div>
+                    <p>托尔与卡尔最初在龙族入侵期间相遇，当时兽人部落提供了一些稀有材料帮助锻造龙息剑。两人都是各自族群中的工匠大师，对对方的技艺既欣赏又充满竞争意识。</p>
+                    <p>他们经常互相挑战，看谁能锻造出更好的武器或工具。这种竞争促使两人不断突破自己的极限，也为两个族群带来了技术交流。尽管有时争论激烈，但他们对彼此的尊重从未减少，在危机时刻总能放下分歧共同合作。</p>
+                </div>
+
+                <div class="relationship-card">
+                    <div class="relationship-header">
+                        <h3>复杂的师徒</h3>
+                        <span class="relationship-type complex">复杂</span>
+                    </div>
+                    <div class="relationship-members">
+                        莉莎·火焰 & 奥术学院院长
+                    </div>
+                    <p>莉莎是奥术学院院长亲自挑选的学生，院长看中了她在元素魔法方面的天赋。最初，两人关系融洽，院长将毕生所学倾囊相授。然而，随着莉莎的能力不断提升，她开始质疑学院的一些传统教条。</p>
+                    <p>魔法灾变期间，院长主张封锁研究以避免进一步的危险，而莉莎则坚持认为只有深入研究才能解决问题。这导致了两人的分歧，莉莎甚至一度离开学院独自研究。最终，莉莎的方法证明是正确的，院长不得不承认自己的错误，两人的关系也因此发生了微妙的变化，从单纯的师徒变成了相互尊重的同事。</p>
+                </div>
+
+                <div class="relationship-card">
+                    <div class="relationship-header">
+                        <h3>忠诚与背叛</h3>
+                        <span class="relationship-type complex">复杂</span>
+                    </div>
+                    <div class="relationship-members">
+                        莫里斯·暗影 & 亚历山大国王
+                    </div>
+                    <p>莫里斯曾是亚历山大国王最信任的护卫队长，两人亦师亦友。莫里斯多次在暗杀行动中救下国王，而国王也常常听取莫里斯的建议。然而，王国阴谋事件中，莫里斯被诬陷为叛徒，国王一度相信了这些指控。</p>
+                    <p>尽管莫里斯最终洗清了罪名并再次证明了自己的忠诚，但这次经历让他深感失望。他选择离开王室，加入暗夜兄弟会。国王多次派人邀请他回归，但莫里斯已经找到了新的使命。两人的关系从此变得复杂，既有过去的友谊，也有无法弥合的裂痕。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="relationship-section">
+            <h2>主要种族关系</h2>
+            
+            <div class="faction-map">
+                <h3>精灵族</h3>
+                <div class="faction-description">
+                    <p>精灵族是异世界中最古老的种族之一，主要居住在银月森林和周边地区。他们与自然有着深厚的联系，精通自然魔法和弓箭技艺。精灵族社会结构松散但稳定，由长老会和守护者共同领导。</p>
+                </div>
+                <div class="faction-relations">
+                    <div class="faction-relation friendly">
+                        <strong>人类王国：</strong> 友好盟友，共同抵抗过黑暗魔法的威胁，有频繁的贸易往来。
+                    </div>
+                    <div class="faction-relation neutral">
+                        <strong>矮人氏族：</strong> 中立，尊重彼此但文化差异较大，偶有小规模贸易。
+                    </div>
+                    <div class="faction-relation friendly">
+                        <strong>元素生物：</strong> 友好，精灵视元素生物为自然的一部分，常与之和平共处。
+                    </div>
+                    <div class="faction-relation hostile">
+                        <strong>暗影教团：</strong> 敌对，精灵族是最早识破并抵抗暗影教团的种族。
+                    </div>
+                    <div class="faction-relation neutral">
+                        <strong>兽人部落：</strong> 中立偏友好，大魔法战争后关系有所改善，特别是在卡尔·石心的领导下。
+                    </div>
+                </div>
+            </div>
+
+            <div class="faction-map">
+                <h3>人类王国</h3>
+                <div class="faction-description">
+                    <p>人类是异世界中分布最广、最多样化的种族。他们建立了多个王国和城邦，其中最强大的是中央大陆的日冕王国。人类适应能力强，在魔法、武艺、商业等多个领域都有杰出表现。</p>
+                </div>
+                <div class="faction-relations">
+                    <div class="faction-relation friendly">
+                        <strong>精灵族：</strong> 友好盟友，共享知识和资源，有稳定的外交关系。
+                    </div>
+                    <div class="faction-relation friendly">
+                        <strong>矮人氏族：</strong> 友好，特别是北方人类部落与矮人的关系在龙族入侵后更加紧密。
+                    </div>
+                    <div class="faction-relation neutral">
+                        <strong>奥术学院：</strong> 中立偏友好，学院保持政治中立，但为王国提供魔法支持。
+                    </div>
+                    <div class="faction-relation hostile">
+                        <strong>暗影教团：</strong> 敌对，王国军队积极参与了对抗暗影教团的战争。
+                    </div>
+                    <div class="faction-relation neutral">
+                        <strong>兽人部落：</strong> 复杂，部分边境地区仍有冲突，但官方关系逐渐改善。
+                    </div>
+                </div>
+            </div>
+
+            <div class="faction-map">
+                <h3>矮人氏族</h3>
+                <div class="faction-description">
+                    <p>矮人主要居住在山脉和地下城市中，以精湛的锻造技艺和坚固的防御工事闻名。铁山氏族是最强大的矮人群体，拥有丰富的矿产资源和先进的冶金技术。矮人社会注重传统和家族荣誉。</p>
+                </div>
+                <div class="faction-relations">
+                    <div class="faction-relation neutral">
+                        <strong>精灵族：</strong> 中立，相互尊重但交流有限。
+                    </div>
+                    <div class="faction-relation friendly">
+                        <strong>北方人类：</strong> 友好盟友，共同抵抗过龙族入侵，有密切的军事和贸易合作。
+                    </div>
+                    <div class="faction-relation hostile">
+                        <strong>龙族：</strong> 敌对，尽管战争已经结束，但双方仍有领土争端。
+                    </div>
+                    <div class="faction-relation neutral">
+                        <strong>兽人部落：</strong> 中立偏友好，通过卡尔·石心与托尔·雷霆的关系建立了初步合作。
+                    </div>
+                    <div class="faction-relation friendly">
+                        <strong>地精商团：</strong> 友好，矮人为地精提供金属制品，地精为矮人提供稀有材料和情报。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="placeholder">
+            <h2>更多关系网络正在整理中...</h2>
+            <p>这个世界中的关系网络错综复杂，我们正在努力整理更多信息。</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 异世界编年史 | 冷兵器与魔法的奇幻世界</p>
+    </footer>
+
+    <script>
+        // 简单的标签切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有标签的active类
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // 为当前点击的标签添加active类
+                    this.classList.add('active');
+                    
+                    // 这里可以添加显示/隐藏相应内容的逻辑
+                    // 目前仅做演示，实际功能需要进一步开发
+                });
+            });
+        });
+    </script>
+</body>
+</html>
