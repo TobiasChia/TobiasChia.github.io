@@ -159,6 +159,68 @@ h1 {
     margin: 2rem 0;
 }
 
+/* 时间轴样式 */
+.timeline {
+    margin-top: 2rem;
+}
+
+.era {
+    margin-bottom: 3rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.era h2 {
+    color: #2c3e50;
+    margin-top: 0;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+.events {
+    margin-top: 1.5rem;
+    position: relative;
+}
+
+.events:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 20px;
+    width: 4px;
+    background-color: #3498db;
+}
+
+.timeline-event {
+    position: relative;
+    margin-left: 50px;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.timeline-event:before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: -35px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+.timeline-event h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
 /* Footer styles */
 footer {
     text-align: center;

@@ -93,18 +93,99 @@ function applyTemplate(templateName, data) {
     
     let template = fs.readFileSync(templatePath, 'utf8');
     
+    // 处理所有mustache标签
+    let result = template;
+    let lastResult = '';
+    
+    // 循环处理直到所有模板标签都被替换
+    while (lastResult !== result) {
+        lastResult = result;
+        
+        // 处理条件块 {{#variable}}...{{/variable}}
+        result = result.replace(/\{\{#([^}]+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, (match, key, content) => {
+            const trimmedKey = key.trim();
+            const keyParts = trimmedKey.split('.');
+            
+            // 获取数据，支持嵌套对象
+            let currentData = data;
+            for (const part of keyParts) {
+                if (currentData && typeof currentData === 'object') {
+                    currentData = currentData[part];
+                } else {
+                    currentData = undefined;
+                    break;
+                }
+            }
+            
+            if (Array.isArray(currentData)) {
+                // 如果是数组，为每个元素重复内容
+                return currentData.map(item => {
+                    let itemContent = content;
+                    
+                    // 处理简单替换
+                    for (const [itemKey, itemValue] of Object.entries(item)) {
+                        if (itemValue !== undefined && itemValue !== null) {
+                            const regex = new RegExp(`\\{\\{${itemKey}\\}\\}`, 'g');
+                            itemContent = itemContent.replace(regex, itemValue);
+                        }
+                    }
+                    
+                    // 处理嵌套数组
+                    if (content.includes('{{#')) {
+                        const nestData = { ...data, ...item };
+                        itemContent = applyNestedTemplate(itemContent, nestData);
+                    }
+                    
+                    return itemContent;
+                }).join('');
+            } else {
+                // 如果是布尔值或对象，根据真值显示内容
+                return currentData ? content : '';
+            }
+        });
+        
+        // 替换简单的变量 {{variable}}
+        result = result.replace(/\{\{([^}#\/]+)\}\}/g, (match, key) => {
+            const trimmedKey = key.trim();
+            const keyParts = trimmedKey.split('.');
+            
+            // 获取数据，支持嵌套对象
+            let value = data;
+            for (const part of keyParts) {
+                if (value && typeof value === 'object') {
+                    value = value[part];
+                } else {
+                    value = undefined;
+                    break;
+                }
+            }
+            
+            return value !== undefined ? value : '';
+        });
+    }
+    
+    return result;
+}
+
+// 处理嵌套模板
+function applyNestedTemplate(template, data) {
     // 处理条件块 {{#variable}}...{{/variable}}
-    template = template.replace(/\{\{#([^}]+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, (match, key, content) => {
+    let result = template.replace(/\{\{#([^}]+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, (match, key, content) => {
         const trimmedKey = key.trim();
+        
         if (Array.isArray(data[trimmedKey])) {
             // 如果是数组，为每个元素重复内容
             return data[trimmedKey].map(item => {
                 let itemContent = content;
+                
                 // 替换项目中的变量
                 for (const [itemKey, itemValue] of Object.entries(item)) {
-                    const regex = new RegExp(`\\{\\{${itemKey}\\}\\}`, 'g');
-                    itemContent = itemContent.replace(regex, itemValue || '');
+                    if (itemValue !== undefined && itemValue !== null) {
+                        const regex = new RegExp(`\\{\\{${itemKey}\\}\\}`, 'g');
+                        itemContent = itemContent.replace(regex, itemValue);
+                    }
                 }
+                
                 return itemContent;
             }).join('');
         } else {
@@ -114,12 +195,12 @@ function applyTemplate(templateName, data) {
     });
     
     // 替换简单的变量 {{variable}}
-    template = template.replace(/\{\{([^}#\/]+)\}\}/g, (match, key) => {
+    result = result.replace(/\{\{([^}#\/]+)\}\}/g, (match, key) => {
         const trimmedKey = key.trim();
         return data[trimmedKey] !== undefined ? data[trimmedKey] : '';
     });
     
-    return template;
+    return result;
 }
 
 /**
@@ -197,7 +278,12 @@ function processHomePage() {
         title: metadata.title || '异世界编年史',
         subtitle: metadata.subtitle || '冷兵器与魔法的奇幻世界',
         intro: intro,
-        sections: sections
+        sections: sections.map(section => ({
+            title: section.title,
+            description: section.description,
+            link: section.link,
+            linkText: section.linkText
+        }))
     };
     
     const html = applyTemplate('home', data);
@@ -348,11 +434,130 @@ function processCharactersPage() {
     }
 }
 
+/**
+ * 处理时间轴页面
+ */
+function processTimelinePage() {
+    const timelinePath = path.join(contentDir, 'timeline.md');
+    
+    if (!fs.existsSync(timelinePath)) {
+        console.error('时间轴Markdown文件不存在');
+        return;
+    }
+    
+    const content = fs.readFileSync(timelinePath, 'utf8');
+    const { metadata, content: markdownContent } = extractFrontMatter(content);
+    
+    // 解析Markdown内容
+    const htmlContent = simpleMarkdownToHtml(markdownContent);
+    
+    // 提取介绍部分
+    let intro = '';
+    const lines = markdownContent.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].startsWith('# ')) {
+            // 找到第一个段落
+            for (let j = i + 1; j < lines.length; j++) {
+                if (lines[j].trim() !== '' && !lines[j].startsWith('#')) {
+                    intro = `<p>${lines[j]}</p>`;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    
+    // 提取纪元和事件
+    const eras = [];
+    let currentEra = null;
+    let currentEvents = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        // 检测二级标题（纪元标题）
+        if (line.startsWith('## ')) {
+            // 如果已经有当前纪元，添加到eras数组
+            if (currentEra) {
+                currentEra.events = currentEvents;
+                eras.push(currentEra);
+                currentEvents = [];
+            }
+            
+            // 获取纪元标题和描述
+            const title = line.replace('## ', '');
+            let description = '';
+            
+            // 寻找描述（紧跟在标题后的段落）
+            for (let j = i + 1; j < lines.length; j++) {
+                if (lines[j].trim() !== '' && !lines[j].startsWith('#')) {
+                    description = lines[j];
+                    break;
+                }
+            }
+            
+            currentEra = {
+                title: title,
+                description: description,
+                events: []
+            };
+        }
+        // 检测三级标题（事件标题）
+        else if (line.startsWith('### ') && currentEra) {
+            // 解析事件年份和标题
+            const eventHeader = line.replace('### ', '');
+            const parts = eventHeader.split(' - ');
+            
+            if (parts.length >= 2) {
+                const year = parts[0].trim();
+                const title = parts[1].trim();
+                let description = '';
+                
+                // 寻找描述（紧跟在标题后的段落）
+                for (let j = i + 1; j < lines.length; j++) {
+                    if (lines[j].trim() !== '' && !lines[j].startsWith('#')) {
+                        description = lines[j];
+                        break;
+                    }
+                }
+                
+                currentEvents.push({
+                    year: year,
+                    event_title: title,
+                    event_description: description
+                });
+            }
+        }
+    }
+    
+    // 添加最后一个纪元
+    if (currentEra) {
+        currentEra.events = currentEvents;
+        eras.push(currentEra);
+    }
+    
+    // 应用模板
+    const data = {
+        title: metadata.title || '时间轴',
+        subtitle: metadata.subtitle || '历史时间轴',
+        intro: intro,
+        eras: eras
+    };
+    
+    const html = applyTemplate('timeline', data);
+    
+    if (html) {
+        fs.writeFileSync(path.join(outputDir, 'timeline.html'), html);
+        console.log('时间轴页面生成成功');
+    }
+}
+
 // 执行构建
 function build() {
     console.log('开始构建...');
     processHomePage();
     processCharactersPage();
+    processTimelinePage();
     // 可以添加其他页面的处理函数
     console.log('构建完成');
 }

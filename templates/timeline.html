@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间轴 - 异世界编年史</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <header>
+        <h1>异世界编年史</h1>
+        <div class="subtitle">{{subtitle}}</div>
+    </header>
+
+    <div class="navigation">
+        <div class="nav-container">
+            <a href="index.html">首页</a>
+            <a href="characters.html">人物</a>
+            <a href="events.html">事件</a>
+            <a href="relationships.html">关系</a>
+            <a href="timeline.html" class="active">时间轴</a>
+            <a href="settings.html">设定</a>
+            <a href="history.html">历史</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="intro">
+            {{intro}}
+        </div>
+
+        <div class="timeline">
+            {{#eras}}
+            <div class="era">
+                <h2>{{title}}</h2>
+                <p>{{description}}</p>
+                
+                <div class="events">
+                    {{#events}}
+                    <div class="timeline-event">
+                        <h3>{{year}} - {{event_title}}</h3>
+                        <p>{{event_description}}</p>
+                    </div>
+                    {{/events}}
+                </div>
+            </div>
+            {{/eras}}
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 异世界编年史 | 冷兵器与魔法的奇幻世界</p>
+    </footer>
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>

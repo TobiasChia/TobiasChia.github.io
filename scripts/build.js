@@ -138,7 +138,7 @@ function processHomePage() {
                 sections.push(currentSection);
             }
             currentSection = {
-                heading: line.substring(3).trim(),
+                title: line.substring(3).trim(),
                 description: '',
                 link: '',
                 linkText: ''
@@ -244,11 +244,107 @@ function processCharactersPage() {
     }
 }
 
+/**
+ * 处理时间轴页面
+ */
+function processTimelinePage() {
+    const timelinePath = path.join(contentDir, 'timeline.md');
+    
+    if (!fs.existsSync(timelinePath)) {
+        console.error('时间轴Markdown文件不存在');
+        return;
+    }
+    
+    const content = fs.readFileSync(timelinePath, 'utf8');
+    const { metadata, content: markdownContent } = extractFrontMatter(content);
+    
+    // 解析Markdown内容
+    const htmlContent = convertMarkdownToHtml(markdownContent);
+    
+    // 提取介绍部分
+    const introMatch = htmlContent.match(/<h1>.*?<\/h1>\s*<p>(.*?)<\/p>/);
+    const intro = introMatch ? `<p>${introMatch[1]}</p>` : '';
+    
+    // 提取纪元和事件
+    const eras = [];
+    let currentEra = null;
+    
+    // 使用正则表达式匹配纪元和事件
+    const eraRegex = /<h2>(.*?)<\/h2>\s*<p>(.*?)<\/p>/g;
+    const eventRegex = /<h3>(.*?) - (.*?)<\/h3>\s*<p>(.*?)<\/p>/g;
+    
+    let match;
+    let lastIndex = 0;
+    
+    // 提取所有纪元
+    while ((match = eraRegex.exec(htmlContent)) !== null) {
+        if (currentEra) {
+            // 提取上一个纪元的所有事件
+            const eraContent = htmlContent.substring(lastIndex, match.index);
+            const events = [];
+            let eventMatch;
+            
+            while ((eventMatch = eventRegex.exec(eraContent)) !== null) {
+                events.push({
+                    year: eventMatch[1],
+                    title: eventMatch[2],
+                    description: eventMatch[3]
+                });
+            }
+            
+            currentEra.events = events;
+            eras.push(currentEra);
+        }
+        
+        currentEra = {
+            title: match[1],
+            description: match[2],
+            events: []
+        };
+        
+        lastIndex = match.index + match[0].length;
+    }
+    
+    // 处理最后一个纪元
+    if (currentEra) {
+        const eraContent = htmlContent.substring(lastIndex);
+        const events = [];
+        let eventMatch;
+        
+        while ((eventMatch = eventRegex.exec(eraContent)) !== null) {
+            events.push({
+                year: eventMatch[1],
+                title: eventMatch[2],
+                description: eventMatch[3]
+            });
+        }
+        
+        currentEra.events = events;
+        eras.push(currentEra);
+    }
+    
+    // 应用模板
+    const data = {
+        title: metadata.title || '时间轴',
+        subtitle: metadata.subtitle || '历史时间轴',
+        intro: intro,
+        eras: eras
+    };
+    
+    const html = applyTemplate('timeline', data);
+    
+    if (html) {
+        fs.writeFileSync(path.join(outputDir, 'timeline.html'), html);
+        console.log('时间轴页面生成成功');
+    }
+}
+
 // 执行构建
 function build() {
     console.log('开始构建...');
     processHomePage();
     processCharactersPage();
+    processTimelinePage();
     // 可以添加其他页面的处理函数
     console.log('构建完成');
 }
