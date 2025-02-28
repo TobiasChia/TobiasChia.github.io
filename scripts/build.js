@@ -84,9 +84,22 @@ function applyTemplate(templateName, data) {
         return data[trimmedKey] !== undefined ? data[trimmedKey] : match;
     });
     
-    // 处理条件块 {{#variable}}...{{/variable}}
+    // 处理数组/条件块 {{#variable}}...{{/variable}}
     template = template.replace(/\{\{#([^}]+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, (match, key, content) => {
         const trimmedKey = key.trim();
+        if (Array.isArray(data[trimmedKey])) {
+            return data[trimmedKey].map(item => {
+                let itemContent = content;
+                // 替换项目中的变量
+                Object.keys(item).forEach(itemKey => {
+                    itemContent = itemContent.replace(
+                        new RegExp(`\\{\\{${itemKey}\\}\\}`, 'g'),
+                        item[itemKey]
+                    );
+                });
+                return itemContent;
+            }).join('\n');
+        }
         return data[trimmedKey] ? content : '';
     });
     
@@ -111,17 +124,43 @@ function processHomePage() {
     const htmlContent = convertMarkdownToHtml(markdownContent);
     
     // 提取各个部分
+    // 从Markdown提取部分信息
     const sections = [];
-    const sectionRegex = /<h2>(.*?)<\/h2>\s*<p>(.*?)<\/p>\s*<p><a href="(.*?)">(.*?)<\/a><\/p>/g;
-    let match;
+    const lines = markdownContent.split('\n');
+    let currentSection = null;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        // 检测二级标题作为新部分的开始
+        if (line.startsWith('## ')) {
+            if (currentSection) {
+                sections.push(currentSection);
+            }
+            currentSection = {
+                heading: line.substring(3).trim(),
+                description: '',
+                link: '',
+                linkText: ''
+            };
+        } 
+        // 如果有当前部分，且不是标题或链接行，则为描述
+        else if (currentSection && !line.startsWith('[') && line.trim() !== '') {
+            currentSection.description = line.trim();
+        }
+        // 检测链接
+        else if (currentSection && line.startsWith('[')) {
+            const linkMatch = line.match(/\[(.*?)\]\((.*?)\)/);
+            if (linkMatch) {
+                currentSection.linkText = linkMatch[1];
+                currentSection.link = linkMatch[2];
+            }
+        }
+    }
     
-    while ((match = sectionRegex.exec(htmlContent)) !== null) {
-        sections.push({
-            title: match[1],
-            description: match[2],
-            link: match[3],
-            linkText: match[4]
-        });
+    // 添加最后一个部分
+    if (currentSection) {
+        sections.push(currentSection);
     }
     
     // 提取介绍部分
