@@ -27,15 +27,13 @@ json_files = ['data/agent.json']
 
 data = load_multiple_json_files(json_files)
 
-HR = Agent(name="HR", instructions="", model="")
+HR = Agent(name="HR", instructions="", model="",handoffs=[Manager])
 
-Manager = Agent(name="Manager", instructions="", model="",tools=[function_tool("HR", HR)])
+Manager = Agent(name="Manager", instructions="", model="",handoffs=[HR])
 
-result = Runner.run(Manager, input="")
+task = ""
 
-
-
-
+result = Runner.run(Manager, input=task)
 
 save_to_json_file(result, 'data/agent.json')
 
