@@ -1,7 +1,6 @@
-{
-  "角色设计师": {
-    "name": "角色设计师",
-    "instructions": "设计角色",
-    "model":"grok-2-1212"
+[
+  {
+    "name": "HR",
+    "instructions": "我是HR, 负责创建新的Agent, 并定义其职能"
   }
-}
+]
