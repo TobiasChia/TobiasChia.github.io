@@ -1,6 +1,6 @@
 import os
 from openai import AsyncOpenAI
-import simplejson as json
+import yaml
 from agents import Agent, Runner, FileSearchTool, WebSearchTool, ComputerTool, function_tool, set_default_openai_api, set_default_openai_client, set_tracing_disabled
 from dotenv import load_dotenv
 import asyncio
@@ -15,6 +15,7 @@ DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 GROK_BASE_URL = "https://api.x.ai/v1"
 GROK_API_KEY = os.getenv("GROK_API_KEY")
 GROK_MODEL = "grok-2-1212"
+GROK_IMAGE_MODEL = "grok-2-image-1212"
 CLAUDE_BASE_URL = "https://api.anthropic.com/v1"
 CLAUDE_API_KEY = os.getenv("CLAUDE_API_KEY")
 GEMINI_BASE_URL = "https://api.gemini.com/v1"
@@ -30,8 +31,11 @@ MODEL = OPEN_AI_MODEL
 
 @function_tool
 def upsert_agent(name: str, instructions: str):
-    with open('data\agent.json', 'r', encoding='utf-8') as f:
-        agents = json.load(f)
+    try:
+        with open('data/agent.yaml', 'r', encoding='utf-8') as f:
+            agents = yaml.safe_load(f)
+    except (FileNotFoundError, yaml.YAMLError):
+        agents = []
 
     if not isinstance(agents, list):
         agents = []
@@ -55,14 +59,17 @@ def upsert_agent(name: str, instructions: str):
         }
         agents.append(new_agent)
 
-    with open('data/agent.json', 'w', encoding='utf-8') as f:
-        json.dump(agents, f, ensure_ascii=False, indent=4)
+    with open('data/agent.yaml', 'w', encoding='utf-8') as f:
+        yaml.dump(agents, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
     return agents
 
 def load_agents():
-    with open('data/agent.json', 'r', encoding='utf-8') as f:
-        data = json.load(f)
+    try:
+        with open('data/agent.yaml', 'r', encoding='utf-8') as f:
+            data = yaml.safe_load(f)
+    except (FileNotFoundError, yaml.YAMLError):
+        data = []
     
     agents = []
     for item in data:
@@ -81,15 +88,16 @@ def find_agent_by_name(agents, name):
     return None
 
 agents = load_agents()
-find_agent_by_name(agents, "HR").tools = [upsert_agent]
 
 Manager = Agent(name="Manager", instructions="我是Manager, 负责调用一切资源协助客户完成需求", model=MODEL,handoffs=agents)
 
-user_input = input()
-while user_input.lower() != "exit":
+
+while True:
+    user_input = input("> ")
+    if user_input.lower() == "exit":
+        break
     result = Runner.run_sync(Manager, user_input.strip())
     print(result.final_output)
-    user_input = input()
 
 
 
